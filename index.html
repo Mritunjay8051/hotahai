@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Browser Caching & Speed Headers -->
+    <meta http-equiv="Cache-Control" content="public, max-age=31536000">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Secure Access</title>
+
+    <!-- 1. External Scripts Pre-connections (Speed Boost) -->
+    <link rel="preconnect" href="https://libtl.com" crossorigin>
+    <link rel="dns-prefetch" href="https://libtl.com">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 2. Monetag SDK -->
+    <script src='https://libtl.com/sdk.js' data-zone='10350119' data-sdk='show_10350119'></script>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PKR6FDX5JX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-PKR6FDX5JX');
+    </script>
+
+    <style>
+        body {
+            background: #f1f5f9;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+            user-select: none; /* Text selection disable */
+        }
+        .pulse-btn {
+            animation: pulse-shadow 2s infinite;
+        }
+        @keyframes pulse-shadow {
+            0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+        }
+        .hidden { display: none !important; }
+        
+        /* Provider Badge Styles - Updated to only Green for Monetag */
+        .provider-badge {
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 8px;
+            text-transform: uppercase;
+            background-color: #dcfce7; 
+            color: #166534; 
+            border: 1px solid #166534;
+        }
+    </style>
+
+    <!-- 3. INSTANT CHECK & HISTORY MANAGEMENT -->
+    <script>
+        (function() {
+            try {
+                // URL & Payload
+                var urlParams = new URLSearchParams(window.location.search);
+                var payload = urlParams.get('start') || "default";
+                
+                // History Check (Last 5 Links Logic)
+                var historyStr = localStorage.getItem("verified_history");
+                var historyArr = historyStr ? JSON.parse(historyStr) : [];
+                
+                // Agar current payload history list me hai, toh verified hai
+                if (historyArr.includes(payload)) {
+                    var finalUrl = "https://t.me/Sweet_Watermelon_bot?start=" + payload;
+                    window.location.replace(finalUrl);
+                }
+            } catch(e) { console.error("History Check Error", e); }
+        })();
+    </script>
+</head>
+<body>
+
+    <div class="w-full max-w-xs p-5 bg-white rounded-2xl shadow-xl text-center relative z-10">
+        
+        <!-- Header Icon -->
+        <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-blue-100">
+            <i class="fas fa-lock text-2xl"></i>
+        </div>
+
+        <h2 class="text-xl font-bold text-gray-800 mb-1">Secure Link</h2>
+        <p class="text-xs text-gray-500 mb-6">Click below to access your content</p>
+
+        <!-- Main Button -->
+        <button id="unlock-btn" onclick="handleAdLogic()" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-3.5 px-4 rounded-xl shadow-lg transition-transform transform active:scale-95 pulse-btn flex items-center justify-center relative">
+            <span>Unlock Now</span>
+            <i class="fas fa-arrow-right ml-2"></i>
+            
+            <!-- DEBUG INDICATOR (M) -->
+            <span id="provider-badge" class="provider-badge">M</span>
+        </button>
+
+        <!-- Loading / Status State -->
+        <div id="status-msg" class="hidden mt-3 text-sm font-medium text-blue-600">
+            <i class="fas fa-circle-notch fa-spin mr-1"></i> <span id="status-text">Processing...</span>
+        </div>
+
+        <div class="mt-6 text-[10px] text-gray-400">
+            Protected by SafeGuard • Ver: 4.0 (Monetag Only)
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const payload = urlParams.get('start') || "e5a1fec3c12346f483e0b";
+        const finalLink = `https://t.me/Sweet_Watermelon_bot?start=${payload}`;
+        
+        // NEW: Onclick/Direct Link for redirection after ad
+        const onclickAdLink = "https://otieu.com/4/10459965";
+        
+        let isProcessing = false;
+        
+        // --- CORE FUNCTIONS ---
+
+        // 1. Success Handler (Triggered AFTER ad is watched)
+        function onAdSuccess() {
+            try {
+                // A. Analytics Event (Only fires on success now)
+                gtag('event', 'click_unlock', {
+                    'payload': payload, 
+                    'status': 'verified_monetag'
+                });
+
+                // B. Save History
+                let historyStr = localStorage.getItem("verified_history");
+                let historyArr = historyStr ? JSON.parse(historyStr) : [];
+                
+                // Add to history
+                if (!historyArr.includes(payload)) {
+                    historyArr.unshift(payload);
+                    if (historyArr.length > 5) historyArr = historyArr.slice(0, 5);
+                    localStorage.setItem("verified_history", JSON.stringify(historyArr));
+                }
+
+                // C. UI Update
+                const btn = document.getElementById('unlock-btn');
+                btn.innerHTML = '<i class="fas fa-check"></i> Unlocked!';
+                btn.classList.replace('bg-blue-600', 'bg-green-500');
+                btn.classList.remove('pulse-btn');
+                
+                // D. REDIRECT LOGIC (Double Action)
+                document.getElementById('status-text').innerText = "Redirecting...";
+                
+                setTimeout(() => {
+                    // Logic: Open Bot Link in New Tab + Redirect Current Tab to Onclick Ad
+                    // This ensures the user visits the ad (current tab) but also gets the content (new tab)
+                    
+                    // 1. Open Content (Bot) in New Tab
+                    window.open(finalLink, '_blank');
+                    
+                    // 2. Redirect Current Tab to Onclick Ad (Instantly)
+                    window.location.href = onclickAdLink;
+                }, 500);
+
+            } catch(e) {
+                console.error("Success Handler Error", e);
+                // Fallback if something fails: Just redirect to Bot
+                window.location.replace(finalLink);
+            }
+        }
+
+        // 2. Main Click Handler
+        function handleAdLogic() {
+            if (isProcessing) return;
+            isProcessing = true;
+
+            const btn = document.getElementById('unlock-btn');
+            const status = document.getElementById('status-msg');
+
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+            status.classList.remove('hidden');
+            document.getElementById('status-text').innerText = "Loading Partner...";
+
+            // Call Monetag SDK
+            if (typeof show_10350119 === 'function') {
+                show_10350119().then(() => {
+                    // Ad Closed/Completed -> Success
+                    onAdSuccess();
+                }).catch((e) => {
+                    // Ad Failed/Blocked -> Still grant access to avoid stuck user
+                    console.log("Monetag Warning/Block:", e);
+                    // Even if ad fails, we can still try the redirect flow or just give content
+                    // Let's do the redirect flow to maximize revenue attempt
+                    onAdSuccess(); 
+                });
+            } else {
+                // SDK not loaded -> Fallback
+                console.log("Monetag SDK missing");
+                onAdSuccess();
+            }
+        }
+        
+        // --- Back Button Fix ---
+        window.addEventListener('pageshow', (event) => {
+             // Re-check logic on back button
+             var historyStr = localStorage.getItem("verified_history");
+             var historyArr = historyStr ? JSON.parse(historyStr) : [];
+             // If verified, redirect to Bot (skipping the ad loop for verified users)
+             if (historyArr.includes(payload)) {
+                 window.location.replace(finalLink);
+             } else {
+                 // Reset UI if they came back without verifying
+                 isProcessing = false;
+                 const btn = document.getElementById('unlock-btn');
+                 const status = document.getElementById('status-msg');
+                 btn.classList.remove('opacity-75', 'cursor-not-allowed', 'bg-green-500');
+                 btn.classList.add('bg-blue-600', 'pulse-btn');
+                 btn.innerHTML = '<span>Unlock Now</span><i class="fas fa-arrow-right ml-2"></i><span id="provider-badge" class="provider-badge">M</span>';
+                 status.classList.add('hidden');
+             }
+        });
+
+    </script>
+</body>
+                                                                                                   </html>
